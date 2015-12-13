@@ -1,16 +1,10 @@
 (ns hiccup.form
   "Functions for generating HTML forms and input fields."
-  (:use hiccup.def
-        hiccup.util))
+  (:require [hiccup.util :refer [to-uri *html-mode* as-str]]
+            #?(:clj [hiccup.def :refer [defelem]]))
+  #?(:cljs (:require-macros [hiccup.def :refer [defelem]])))
 
 (def ^:dynamic *group* [])
-
-(defmacro with-group
-  "Group together a set of related form fields for use with the Ring
-  nested-params middleware."
-  [group & body]
-  `(binding [*group* (conj *group* (as-str ~group))]
-     (list ~@body)))
 
 (defn- make-name
   "Create a field name from the supplied argument the current field group."

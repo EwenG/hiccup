@@ -1,7 +1,19 @@
 (ns hiccup.test.form
-  (:use clojure.test
-        hiccup.core
-        hiccup.form))
+  #?(:clj (:require [hiccup.core :refer [html]]
+                    [clojure.test :refer :all]
+                    [hiccup.form-macros :refer [with-group]]
+                    [hiccup.form :refer :all])
+     :cljs (:require [cljs.test :refer-macros
+                      [deftest is testing run-tests run-all-tests are]]
+                     [hiccup.core]
+                     [hiccup.form :refer [hidden-field text-field label
+                                          file-upload text-area drop-down
+                                          radio-button password-field
+                                          form-to reset-button check-box
+                                          submit-button select-options
+                                          email-field]]))
+  #?(:cljs (:require-macros [hiccup.core :refer [html]]
+                            [hiccup.form-macros :refer [with-group]])))
 
 (deftest test-hidden-field
   (is (= (html (hidden-field :foo "bar"))

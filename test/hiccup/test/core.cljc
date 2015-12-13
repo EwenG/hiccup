@@ -1,6 +1,10 @@
 (ns hiccup.test.core
-  (:use clojure.test
-        hiccup.core))
+  #?(:clj (:require [hiccup.core :refer [html]]
+                    [clojure.test :refer :all])
+     :cljs (:require [cljs.test :refer-macros
+                      [deftest is testing run-tests run-all-tests]]
+                     [hiccup.core]))
+  #?(:cljs (:require-macros [hiccup.core :refer [html]])))
 
 (deftest tag-names
   (testing "basic tags"
@@ -46,7 +50,7 @@
   (testing "keywords are turned into strings"
     (is (= (html [:div :foo]) "<div>foo</div>")))
   (testing "vecs don't expand - error if vec doesn't have tag name"
-    (is (thrown? IllegalArgumentException
+    (is (thrown? #?(:clj IllegalArgumentException :cljs js/Error)
                  (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
     (is (= (html [:div [:p]]) "<div><p></p></div>"))

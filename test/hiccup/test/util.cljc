@@ -1,7 +1,21 @@
 (ns hiccup.test.util
-  (:use clojure.test
-        hiccup.util)
-  (:import java.net.URI))
+  #?@(:clj [(:require [hiccup.core :refer [html]]
+                      [clojure.test :refer :all]
+                      [hiccup.util-macros :refer :all]
+                      [hiccup.util :refer :all])
+            (:import java.net.URI)]
+     :cljs [(:require [cljs.test :refer-macros
+                       [deftest is testing run-tests run-all-tests are]]
+                      [hiccup.util :refer [escape-html *html-mode* url
+                                           as-str to-str to-uri
+                                           url-encode]])
+            (:require-macros [hiccup.util-macros :refer [with-base-url
+                                                         with-encoding]])
+            (:import [goog Uri])]))
+
+(defn make-uri [s]
+  #?(:clj (URI. s)
+     :cljs (Uri.parse s)))
 
 (deftest test-escaped-chars
   (is (= (escape-html "\"") "&quot;"))
@@ -16,10 +30,10 @@
   (is (= (as-str "foo") "foo"))
   (is (= (as-str :foo) "foo"))
   (is (= (as-str 100) "100"))
-  (is (= (as-str 4/3) (str (float 4/3))))
+  #?(:clj (is (= (as-str 4/3) (str (float 4/3)))))
   (is (= (as-str "a" :b 3) "ab3"))
-  (is (= (as-str (URI. "/foo")) "/foo"))
-  (is (= (as-str (URI. "localhost:3000/foo")) "localhost:3000/foo")))
+  (is (= (as-str (make-uri "/foo")) "/foo"))
+  (is (= (as-str (make-uri "localhost:3000/foo")) "localhost:3000/foo")))
 
 (deftest test-to-uri
   (testing "with no base URL"
@@ -65,18 +79,30 @@
       {:a "&"}        "a=%26"
       {:é "è"}        "%C3%A9=%C3%A8"))
   (testing "different encodings"
-    (are [e s] (= (with-encoding e (url-encode {:iroha "いろは"})) s)
-      "UTF-8"       "iroha=%E3%81%84%E3%82%8D%E3%81%AF"
-      "Shift_JIS"   "iroha=%82%A2%82%EB%82%CD"
-      "EUC-JP"      "iroha=%A4%A4%A4%ED%A4%CF"
-      "ISO-2022-JP" "iroha=%1B%24%42%24%24%24%6D%24%4F%1B%28%42")))
+    #?@(:clj [(are [e s]
+                  (= (with-encoding e (url-encode {:iroha "いろは"})) s)
+                "UTF-8"       "iroha=%E3%81%84%E3%82%8D%E3%81%AF"
+                "Shift_JIS"   "iroha=%82%A2%82%EB%82%CD"
+                "EUC-JP"      "iroha=%A4%A4%A4%ED%A4%CF"
+                "ISO-2022-JP" "iroha=%1B%24%42%24%24%24%6D%24%4F%1B%28%42")]
+             :cljs [(are [e s]
+                        (thrown?
+                         js/Error
+                         (with-encoding e (url-encode {:iroha "いろは"})) s)
+                      "Shift_JIS"   "iroha=%82%A2%82%EB%82%CD"
+                      "EUC-JP"      "iroha=%A4%A4%A4%ED%A4%CF"
+                      "ISO-2022-JP" "iroha=%1B%24%42%24%24%24%6D%24%4F%1B%28%42")
+                    (is (= (with-encoding "UTF-8"
+                             (url-encode {:iroha "いろは"}))
+                           "iroha=%E3%81%84%E3%82%8D%E3%81%AF"))])))
 
 (deftest test-url
   (testing "URL parts and parameters"
     (are [u s] (= u s)
-      (url "foo")          (URI. "foo")
-      (url "foo/" 1)       (URI. "foo/1")
-      (url "/foo/" "bar")  (URI. "/foo/bar")
-      (url {:a "b"})       (URI. "?a=b")
-      (url "foo" {:a "&"}) (URI. "foo?a=%26")
-      (url "/foo/" 1 "/bar" {:page 2}) (URI. "/foo/1/bar?page=2"))))
+      (url "foo")          (make-uri "foo")
+      (url "foo/" 1)       (make-uri "foo/1")
+      (url "/foo/" "bar")  (make-uri "/foo/bar")
+      (url {:a "b"})       (make-uri "?a=b")
+      (url "foo" {:a "&"}) (make-uri "foo?a=%26")
+      (url "/foo/" 1 "/bar" {:page 2})
+      (make-uri "/foo/1/bar?page=2"))))

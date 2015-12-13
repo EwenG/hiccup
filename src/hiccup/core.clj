@@ -1,17 +1,18 @@
 (ns hiccup.core
   "Library for rendering a tree of vectors into a string of HTML.
   Pre-compiles where possible for performance."
-  (:use hiccup.compiler
+  (:use hiccup.compiler-macros
+        hiccup.compiler
         hiccup.util))
 
 (defn wrap-no-escape-strings [content]
   `(if-not *no-escape-strings*
      (binding [*no-escape-strings* identity-set]
-       ~(apply compile-html content))
+       (str ~(apply compile-html content)))
      (let [out-str# ~(apply compile-html content)]
        (set! *no-escape-strings*
              (conj *no-escape-strings* out-str#))
-       out-str#)))
+       (str out-str#))))
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."

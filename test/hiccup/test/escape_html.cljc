@@ -1,8 +1,14 @@
 (ns hiccup.test.escape-html
-  (:use clojure.test
-        hiccup.core
-        hiccup.def
-        hiccup.util))
+  #?@(:clj [(:require [hiccup.core :refer [html]]
+                      [hiccup.def :refer :all]
+                      [clojure.test :refer :all]
+                      [hiccup.util :refer :all])]
+           :cljs [(:require [cljs.test :refer-macros
+                             [deftest is testing run-tests
+                              run-all-tests are]]
+                            [hiccup.util :refer [escape-html
+                                                 without-escape-html]])
+                  (:require-macros [hiccup.core :refer [html]])]))
 
 (deftest escape-strings
   (testing "strings are escaped"

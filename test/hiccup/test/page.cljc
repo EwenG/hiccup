@@ -1,7 +1,13 @@
 (ns hiccup.test.page
-  (:use clojure.test
-        hiccup.page)
-  (:import java.net.URI))
+  (:require [hiccup.page :refer [include-js include-css]]
+            #?(:clj [clojure.test :refer :all])
+            #?(:clj [hiccup.page-macros :refer :all])
+            #?(:cljs [cljs.test :refer-macros
+                      [deftest is testing run-tests run-all-tests]])
+            #?(:cljs [hiccup.core]))
+  #?(:cljs (:require-macros [hiccup.page-macros :refer [html4 html5
+                                                        xhtml]]))
+  (:import #?(:clj [java.net URI] :cljs [goog Uri])))
 
 (deftest html4-test
   (is (= (html4 [:body [:p "Hello" [:br] "World"]])
@@ -61,7 +67,7 @@
            (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 "<!DOCTYPE html>\n"
                 "<html xml:og=\"http://ogp.me/ns#\" xmlns=\"http://www.w3.org/1999/xhtml\">"
-                "<body>Hello World</body></html>")))    
+                "<body>Hello World</body></html>")))
     (is (= (html5 {:xml? true, :lang "en"
                    "xml:og" "http://ogp.me/ns#"} [:body "Hello World"])
            (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -71,14 +77,29 @@
 
 (deftest include-js-test
   (is (= (include-js "foo.js")
-         (list [:script {:type "text/javascript", :src (URI. "foo.js")}])))
+         (list [:script {:type "text/javascript"
+                         , :src #?(:clj (URI. "foo.js")
+                                   :cljs (Uri.parse "foo.js"))}])))
   (is (= (include-js "foo.js" "bar.js")
-         (list [:script {:type "text/javascript", :src (URI. "foo.js")}]
-               [:script {:type "text/javascript", :src (URI. "bar.js")}]))))
+         (list [:script {:type "text/javascript"
+                         , :src #?(:clj (URI. "foo.js")
+                                   :cljs (Uri.parse "foo.js"))}]
+               [:script {:type "text/javascript"
+                         , :src #?(:clj (URI. "bar.js")
+                                   :cljs (Uri.parse "bar.js"))}]))))
 
 (deftest include-css-test
   (is (= (include-css "foo.css")
-         (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}])))
+         (list [:link {:type "text/css",
+                       :href #?(:clj (URI. "foo.css")
+                                :cljs (Uri.parse "foo.css")),
+                       :rel "stylesheet"}])))
   (is (= (include-css "foo.css" "bar.css")
-         (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}]
-               [:link {:type "text/css", :href (URI. "bar.css"), :rel "stylesheet"}]))))
+         (list [:link {:type "text/css",
+                       :href #?(:clj (URI. "foo.css")
+                                :cljs (Uri.parse "foo.css")),
+                       :rel "stylesheet"}]
+               [:link {:type "text/css",
+                       :href #?(:clj (URI. "bar.css")
+                                :cljs (Uri.parse "bar.css")),
+                       :rel "stylesheet"}]))))

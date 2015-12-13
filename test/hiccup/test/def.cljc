@@ -1,6 +1,12 @@
 (ns hiccup.test.def
-  (:use clojure.test
-        hiccup.def))
+  #?(:clj (:require [hiccup.core :refer [html]]
+                    [hiccup.def :refer :all]
+                    [clojure.test :refer :all])
+     :cljs (:require [cljs.test :refer-macros
+                      [deftest is testing run-tests run-all-tests]]
+                     [hiccup.core]))
+  #?(:cljs (:require-macros [hiccup.core :refer [html]]
+                            [hiccup.def :refer [defhtml defelem]])))
 
 (deftest test-defhtml
   (testing "basic html function"
@@ -17,13 +23,24 @@
 (deftest test-defelem
   (testing "one overload function"
     (defelem one-form-two-args [a b] [b a 3])
-    (is (thrown? IllegalArgumentException (one-form-two-args)))
-    (is (thrown? IllegalArgumentException (one-form-two-args {})))
-    (is (thrown? IllegalArgumentException (one-form-two-args 1)))
+    #?(:clj (is (thrown? IllegalArgumentException
+                         (one-form-two-args)))
+       :cljs (is (= [nil nil 3] (one-form-two-args))))
+    #?(:clj (is (thrown? IllegalArgumentException
+                         (one-form-two-args {})))
+
+       :cljs (is (= [nil {} nil 3] (one-form-two-args {}))))
+    #?(:clj (is (thrown? ArgumentException
+                         (one-form-two-args 1)))
+       :cljs (is (= [nil 1 3] (one-form-two-args 1))))
     (is (= [1 0 3] (one-form-two-args 0 1)))
     (is (= [1 {:foo :bar} 0 3] (one-form-two-args {:foo :bar} 0 1)))
-    (is (thrown? IllegalArgumentException (one-form-two-args 1 2 3)))
-    (is (thrown? IllegalArgumentException (one-form-two-args 1 2 3 4))))
+    #?(:clj (is (thrown? IllegalArgumentException
+                         (one-form-two-args 1 2 3)))
+       :cljs (is (= [2 1 3] (one-form-two-args 1 2 3))))
+    #?(:clj (is (thrown? IllegalArgumentException
+                         (one-form-two-args 1 2 3 4)))
+       :cljs (is (= [2 1 3] (one-form-two-args 1 2 3 4)))))
   (testing "three overloads function"
     (defelem three-forms
       ([] [0])
@@ -35,8 +52,10 @@
     (is (= [4 {:foo :bar} 2] (three-forms {:foo :bar} 2)))
     (is (= [1 0] (three-forms 0 1)))
     (is (= [1 {:foo :bar} 0] (three-forms {:foo :bar} 0 1)))
-    (is (thrown? IllegalArgumentException (three-forms 1 2 3)))
-    (is (thrown? IllegalArgumentException (three-forms 1 2 3 4))))
+    (is (thrown? #?(:clj IllegalArgumentException :cljs js/Error)
+                 (three-forms 1 2 3)))
+    (is (thrown? #?(:clj IllegalArgumentException :cljs js/Error)
+                 (three-forms 1 2 3 4))))
   (testing "recursive function"
     (defelem recursive [a]
       (if (< a 1) [a (inc a)] (recursive (- a 1))))
@@ -57,8 +76,11 @@
       ([] {:pre [false]} [0])
       ([a] {:pre [(> a 1)]} [1])
       ([a b] {:pre [(> a 1)]} [1 2]))
-    (is (thrown? AssertionError (three-forms-extra)))
-    (is (thrown? AssertionError (three-forms-extra 0)))
-    (is (thrown? AssertionError (three-forms-extra 0 0)))
+    (is (thrown? #?(:clj AssertionError :cljs js/Error)
+                 (three-forms-extra)))
+    (is (thrown? #?(:clj AssertionError :cljs js/Error)
+                 (three-forms-extra 0)))
+    (is (thrown? #?(:clj AssertionError :cljs js/Error)
+                 (three-forms-extra 0 0)))
     (is (= "my documentation" (:doc (meta #'three-forms-extra))))
     (is (= :attr (:my (meta #'three-forms-extra))))))
