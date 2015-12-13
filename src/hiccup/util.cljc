@@ -13,7 +13,8 @@
 (def ^:dynamic *no-escape-strings* nil)
 
 (defprotocol ToString
-  (^String to-str [x] "Convert a value into a string."))
+  #?(:clj (^String to-str [x] "Convert a value into a string.")
+     :cljs (to-str [x] "Convert a value into a string.")))
 
 (extend-protocol ToString
   Keyword
