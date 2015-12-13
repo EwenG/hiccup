@@ -30,7 +30,7 @@
                          (one-form-two-args {})))
 
        :cljs (is (= [nil {} nil 3] (one-form-two-args {}))))
-    #?(:clj (is (thrown? ArgumentException
+    #?(:clj (is (thrown? IllegalArgumentException
                          (one-form-two-args 1)))
        :cljs (is (= [nil 1 3] (one-form-two-args 1))))
     (is (= [1 0 3] (one-form-two-args 0 1)))

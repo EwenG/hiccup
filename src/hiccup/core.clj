@@ -12,7 +12,7 @@
      (let [out-str# ~(apply compile-html content)]
        (set! *no-escape-strings*
              (conj *no-escape-strings* out-str#))
-       (str out-str#))))
+       out-str#)))
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."

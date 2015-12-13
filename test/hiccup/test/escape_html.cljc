@@ -8,7 +8,8 @@
                               run-all-tests are]]
                             [hiccup.util :refer [escape-html
                                                  without-escape-html]])
-                  (:require-macros [hiccup.core :refer [html]])]))
+                  (:require-macros [hiccup.core :refer [html]]
+                                   [hiccup.def :refer [defhtml]])]))
 
 (deftest escape-strings
   (testing "strings are escaped"
@@ -22,8 +23,8 @@
     (is (= (html (compiled-string) (compiled-string) "<img/>")
            "<div>&lt;p&gt;&lt;/p&gt;</div><div>&lt;p&gt;&lt;/p&gt;</div>&lt;img/&gt;")))
   (testing "compiled strings defined outside the calling context are escaped"
-    (def compiled-static-string (html [:div "<p></p>"]))
-    (is (= (html compiled-static-string)
+    (def compiled-static-string-1 (html [:div "<p></p>"]))
+    (is (= (html compiled-static-string-1)
            "&lt;div&gt;&amp;lt;p&amp;gt;&amp;lt;/p&amp;gt;&lt;/div&gt;")))
   (testing "wrapping compiled string results in too much escaping"
     (is (= (html (str (compiled-string) "<img/>"))
@@ -31,6 +32,6 @@
 
 (deftest avoid-escaping
   (testing "without-escape-html avoids string escaping"
-    (def compiled-static-string (html [:div "<p></p>"]))
-    (is (= (html (without-escape-html compiled-static-string))
+    (def compiled-static-string-2 (html [:div "<p></p>"]))
+    (is (= (html (without-escape-html compiled-static-string-2))
            "<div>&lt;p&gt;&lt;/p&gt;</div>"))))
