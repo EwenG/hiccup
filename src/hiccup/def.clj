@@ -27,10 +27,6 @@
             (apply vector tag# (first args#) body#)))
         (apply func# args#)))))
 
-;; Hiccup uses alter-meta! and alter-var-root to define defelem, but at
-;; the time of this writing, clojurescript does not have alter-var-root
-;; and alter-meta! is buggy.
-;; See http://dev.clojure.org/jira/browse/CLJS-1511
 (defmacro defelem
   "Defines a function that will return a element vector. If the first argumen
   passed to the resulting function is a map, it merges it with the attribute
