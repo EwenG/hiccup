@@ -27,7 +27,7 @@
     :else
       (xml-attribute name value)))
 
-(defn- render-attr-map [attrs]
+(defn render-attr-map [attrs]
   (apply str
     (sort (map render-attribute attrs))))
 

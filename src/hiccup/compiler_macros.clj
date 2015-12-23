@@ -15,8 +15,8 @@
   attributes."
   [attrs]
   (if (some unevaluated? (mapcat identity attrs))
-    `(#'comp/render-attr-map ~attrs)
-    (#'comp/render-attr-map attrs)))
+    `(comp/render-attr-map ~attrs)
+    (comp/render-attr-map attrs)))
 
 (defn- form-name
   "Get the name of the supplied form."
@@ -41,7 +41,7 @@
 
 (defmethod compile-form :default
   [expr]
-  `(#'comp/render-html ~expr))
+  `(comp/render-html ~expr))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
@@ -117,22 +117,22 @@
        (if (map? ~attrs-sym)
          ~(if (#'comp/container-tag? tag content)
             `(str ~(str "<" tag)
-                  (#'comp/render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
+                  (comp/render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
                   ~@(compile-seq content)
                   ~(str "</" tag ">"))
             `(str ~(str "<" tag)
-                  (#'comp/render-attr-map (merge ~tag-attrs ~attrs-sym))
+                  (comp/render-attr-map (merge ~tag-attrs ~attrs-sym))
                   ~(#'comp/end-tag)))
          ~(if (#'comp/container-tag? tag attrs)
-            `(str ~(str "<" tag (#'comp/render-attr-map tag-attrs) ">")
+            `(str ~(str "<" tag (comp/render-attr-map tag-attrs) ">")
                   ~@(compile-seq (cons attrs-sym content))
                   ~(str "</" tag ">"))
-            (str "<" tag (#'comp/render-attr-map tag-attrs)
+            (str "<" tag (comp/render-attr-map tag-attrs)
                  (#'comp/end-tag)))))))
 
 (defmethod compile-element :default
   [element]
-  `(#'comp/render-element
+  `(comp/render-element
      [~(first element)
       ~@(for [x (rest element)]
           (if (vector? x)
@@ -149,7 +149,7 @@
              (hint? expr String) `(maybe-escape-html ~expr)
              (hint? expr Number) `(maybe-escape-html ~expr)
              (seq? expr) (compile-form expr)
-             :else `(#'comp/render-html ~expr)))))
+             :else `(comp/render-html ~expr)))))
 
 (defn- collapse-strs
   "Collapse nested str expressions into one, where possible."
