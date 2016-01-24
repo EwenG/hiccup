@@ -1,7 +1,8 @@
 (ns hiccup.test.page
   (:require [hiccup.core]
-            [hiccup.page :refer [include-js include-css]
-             #?(:clj :refer :cljs :refer-macros) [html4 html5 xhtml]]
+            [hiccup.page :refer [include-js include-css
+                                 #?@(:clj [html4 html5 xhtml])]
+             #?@(:cljs [:refer-macros [html4 html5 xhtml]])]
             #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros
                       [deftest is testing run-tests run-all-tests]]))
