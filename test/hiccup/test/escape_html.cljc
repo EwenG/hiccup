@@ -1,15 +1,13 @@
 (ns hiccup.test.escape-html
-  #?@(:clj [(:require [hiccup.core :refer [html]]
-                      [hiccup.def :refer :all]
-                      [clojure.test :refer :all]
-                      [hiccup.util :refer :all])]
-           :cljs [(:require [cljs.test :refer-macros
-                             [deftest is testing run-tests
-                              run-all-tests are]]
-                            [hiccup.util :refer [escape-html
-                                                 without-escape-html]])
-                  (:require-macros [hiccup.core :refer [html]]
-                                   [hiccup.def :refer [defhtml]])]))
+  (:require [hiccup.core
+               #?(:clj :refer :cljs :refer-macros) [html]]
+            [hiccup.def #?(:clj :refer :cljs :refer-macros) [defhtml]]
+            [hiccup.util #?(:clj :refer :cljs :refer-macros)
+             [deftest is testing run-tests run-all-tests are]]
+            #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros
+                      [deftest is testing run-tests
+                       run-all-tests are]])))
 
 (deftest escape-strings
   (testing "strings are escaped"
@@ -33,5 +31,5 @@
 (deftest avoid-escaping
   (testing "without-escape-html avoids string escaping"
     (def compiled-static-string-2 (html [:div "<p></p>"]))
-    (is (= (html (without-escape-html compiled-static-string-2))
+    (is (= (html (hiccup.util/without-escape-html compiled-static-string-2))
            "<div>&lt;p&gt;&lt;/p&gt;</div>"))))

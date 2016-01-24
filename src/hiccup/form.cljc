@@ -1,6 +1,6 @@
 (ns hiccup.form
   "Functions for generating HTML forms and input fields."
-  (:require [hiccup.util :refer [to-uri *html-mode* as-str]]
+  (:require [hiccup.util :refer [to-uri as-str *html-mode*]]
             #?(:clj [hiccup.def :refer [defelem]]))
   #?(:cljs (:require-macros [hiccup.def :refer [defelem]])))
 
@@ -126,3 +126,11 @@
             (hidden-field "_method" method-str)])
         (concat body)
         (vec))))
+
+#?(:clj
+   (defmacro with-group
+     "Group together a set of related form fields for use with the Ring
+  nested-params middleware."
+     [group & body]
+     `(binding [*group* (conj *group* (as-str ~group))]
+        (list ~@body))))

@@ -1,12 +1,10 @@
 (ns hiccup.test.page
-  (:require [hiccup.page :refer [include-js include-css]]
-            #?(:clj [clojure.test :refer :all])
-            #?(:clj [hiccup.page-macros :refer :all])
-            #?(:cljs [cljs.test :refer-macros
-                      [deftest is testing run-tests run-all-tests]])
-            #?(:cljs [hiccup.core]))
-  #?(:cljs (:require-macros [hiccup.page-macros :refer [html4 html5
-                                                        xhtml]]))
+  (:require [hiccup.core]
+            [hiccup.page :refer [include-js include-css]
+             #?(:clj :refer :cljs :refer-macros) [html4 html5 xhtml]]
+            #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros
+                      [deftest is testing run-tests run-all-tests]]))
   (:import #?(:clj [java.net URI] :cljs [goog Uri])))
 
 (deftest html4-test

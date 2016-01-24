@@ -1,7 +1,6 @@
 (ns hiccup.def
   "Macros for defining functions that generate HTML"
-  (:require [hiccup.core :refer [html]]
-            [hiccup.def :as hdef]))
+  (:require [hiccup.core :refer [html]]))
 
 (defmacro defhtml
   "Define a function, but wrap its output in an implicit html macro."

@@ -1,14 +1,10 @@
 (ns hiccup.test.middleware
-  #?(:clj (:require [hiccup.core :refer [html]]
-                    [clojure.test :refer :all]
-                    [hiccup.middleware :refer [wrap-base-url]]
-                    [hiccup.element :refer [link-to]])
-     :cljs (:require [cljs.test :refer-macros
-                      [deftest is testing run-tests run-all-tests]]
-                     [hiccup.core]
-                     [hiccup.middleware :refer [wrap-base-url]]
-                     [hiccup.element :refer [link-to]]))
-  #?(:cljs (:require-macros [hiccup.core :refer [html]])))
+  (:require [hiccup.core #?(:clj :refer :cljs :refer-macros) [html]]
+            [hiccup.middleware :refer [wrap-base-url]]
+            [hiccup.element :refer [link-to]]
+            #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros
+                      [deftest is testing run-tests run-all-tests]])))
 
 (defn test-handler [request]
   {:status  200

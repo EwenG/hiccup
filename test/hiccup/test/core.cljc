@@ -1,10 +1,8 @@
 (ns hiccup.test.core
-  #?(:clj (:require [hiccup.core :refer [html]]
-                    [clojure.test :refer :all])
-     :cljs (:require [cljs.test :refer-macros
-                      [deftest is testing run-tests run-all-tests]]
-                     [hiccup.core]))
-  #?(:cljs (:require-macros [hiccup.core :refer [html]])))
+  (:require [hiccup.core #?(:clj :refer :cljs :refer-macros) [html]]
+            #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros
+                      [deftest is testing run-tests run-all-tests]])))
 
 (deftest tag-names
   (testing "basic tags"

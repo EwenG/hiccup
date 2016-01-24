@@ -1,12 +1,11 @@
 (ns hiccup.test.def
-  #?(:clj (:require [hiccup.core :refer [html]]
-                    [hiccup.def :refer :all]
-                    [clojure.test :refer :all])
-     :cljs (:require [cljs.test :refer-macros
-                      [deftest is testing run-tests run-all-tests]]
-                     [hiccup.core]))
-  #?(:cljs (:require-macros [hiccup.core :refer [html]]
-                            [hiccup.def :refer [defhtml defelem]])))
+  (:require [hiccup.core
+             #?(:clj :refer :cljs :refer-macros) [html]]
+            [hiccup.def
+             #?(:clj :refer :cljs :refer-macros) [defhtml defelem]]
+            #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros
+                      [deftest is testing run-tests run-all-tests]])))
 
 (deftest test-defhtml
   (testing "basic html function"
