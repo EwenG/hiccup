@@ -3,5 +3,5 @@
   :url "http://github.com/EwenG/hiccup"
   :source-paths ["src"]
   :test-paths ["test"]
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "1.7.170"]])
