@@ -2,8 +2,7 @@
   (:require [hiccup.core
                #?(:clj :refer :cljs :refer-macros) [html]]
             [hiccup.def #?(:clj :refer :cljs :refer-macros) [defhtml]]
-            [hiccup.util #?(:clj :refer :cljs :refer-macros)
-             [deftest is testing run-tests run-all-tests are]]
+            [hiccup.util :refer [escape-html without-escape-html]]
             #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros
                       [deftest is testing run-tests
