@@ -176,3 +176,11 @@
   ;;This is useful in order to escape special characters in strings.
   (collapse-strs `(make-string
                    (str ~@(compile-seq content)))))
+
+(defn compile-html*
+  "Compile a sequence of data-structures into HTML without performaing
+  any pre-compilation."
+  [& content]
+  `(make-string
+    (str ~@(doall (for [expr content]
+                    `(comp/render-html ~expr))))))

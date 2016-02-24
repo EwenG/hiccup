@@ -176,3 +176,10 @@ equality of value. The sort order is not relevant."}
      [encoding & body]
      `(binding [hiccup.util/*encoding* ~encoding]
         ~@body)))
+
+#?(:clj
+   (defn cljs-env?
+     "Take the &env from a macro, and tell whether we are expanding into
+  cljs."
+     [env]
+     (boolean (:ns env))))
