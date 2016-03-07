@@ -1,8 +1,9 @@
 (ns hiccup.compiler
   (:require [hiccup.util :refer [*html-mode* as-str escape-html
-                                 maybe-escape-html]]
+                                 #?(:cljs RawString)]]
             [clojure.string :as str])
-  #?(:clj (:import [clojure.lang IPersistentVector ISeq Named])))
+  #?(:clj (:import [clojure.lang IPersistentVector ISeq Named]
+                   [hiccup.util RawString])))
 
 (defn- xml-mode? []
   (#{:xml :xhtml} *html-mode*))
@@ -84,6 +85,9 @@
       (str "<" tag (render-attr-map attrs) (end-tag)))))
 
 (extend-protocol HtmlRenderer
+  RawString
+  (render-html [this]
+    (str this))
   #?@(:clj [IPersistentVector
             (render-html [this]
                          (render-element this))
@@ -92,7 +96,7 @@
                          (apply str (map render-html this)))
             Named
             (render-html [this]
-                         (maybe-escape-html (name this)))])
+                         (escape-html (name this)))])
 
   #?@(:cljs [List
              (render-html [this]
@@ -108,19 +112,19 @@
                           (render-element this))
              Keyword
              (render-html [this]
-                          (maybe-escape-html (name this)))
+                          (escape-html (name this)))
              string
-             (render-html [this] (maybe-escape-html this))
+             (render-html [this] (escape-html this))
              number
              (render-html [this] (str this))])
   #?@(:clj [Object
             (render-html [this]
-                         (maybe-escape-html (str this)))]
-       :cljs [object
-              (render-html [this]
-                           (if (instance? js/String this)
-                             (maybe-escape-html this)
-                             (maybe-escape-html (str this))))])
+                         (escape-html (str this)))]
+      :cljs [object
+             (render-html [this]
+                          (if (instance? js/String this)
+                            (escape-html this)
+                            (escape-html (str this))))])
   nil
   (render-html [this]
     ""))

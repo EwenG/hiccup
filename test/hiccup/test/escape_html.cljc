@@ -2,7 +2,7 @@
   (:require [hiccup.core
                #?(:clj :refer :cljs :refer-macros) [html]]
             [hiccup.def #?(:clj :refer :cljs :refer-macros) [defhtml]]
-            [hiccup.util :refer [escape-html without-escape-html]]
+            [hiccup.util :refer [escape-html raw-string]]
             #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros
                       [deftest is testing run-tests
@@ -28,7 +28,7 @@
            "&lt;div&gt;&amp;lt;p&amp;gt;&amp;lt;/p&amp;gt;&lt;/div&gt;&lt;img/&gt;"))))
 
 (deftest avoid-escaping
-  (testing "without-escape-html avoids string escaping"
+  (testing "raw-string to avoids string escaping"
     (def compiled-static-string-2 (html [:div "<p></p>"]))
-    (is (= (html (hiccup.util/without-escape-html compiled-static-string-2))
+    (is (= (html (hiccup.util/raw-string compiled-static-string-2))
            "<div>&lt;p&gt;&lt;/p&gt;</div>"))))

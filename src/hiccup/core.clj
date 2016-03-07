@@ -5,14 +5,12 @@
         hiccup.compiler
         hiccup.util))
 
-(defn wrap-no-escape-strings [compile-fn content]
-  `(if-not *no-escape-strings*
-     (binding [*no-escape-strings* identity-set]
-       (str ~(apply compile-fn content)))
-     (let [out-str# ~(apply compile-fn content)]
-       (set! *no-escape-strings*
-             (conj *no-escape-strings* out-str#))
-       out-str#)))
+
+(defn maybe-convert-raw-string [compile-fn content]
+  `(let [out-str# (binding [*is-top-level* false]
+                    ~(apply compile-fn content))]
+     (if *is-top-level*
+       (str out-str#) out-str#)))
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."
@@ -22,15 +20,15 @@
         cljs-env? (cljs-env? &env)]
     (cond (and cljs-env? mode)
           `(binding [*html-mode* (or ~mode *html-mode*)]
-            ~(wrap-no-escape-strings compile-html* content))
+             ~(maybe-convert-raw-string compile-html* content))
           cljs-env?
-          (wrap-no-escape-strings compile-html* content)
+          (maybe-convert-raw-string compile-html* content)
           mode
           (binding [*html-mode* (or mode *html-mode*)]
             `(binding [*html-mode* (or ~mode *html-mode*)]
-               ~(wrap-no-escape-strings compile-html content)))
+               ~(maybe-convert-raw-string compile-html content)))
           :else
-          (wrap-no-escape-strings compile-html content))))
+          (maybe-convert-raw-string compile-html content))))
 
 (def ^{:doc "Alias for hiccup.util/escape-html"}
   h escape-html)

@@ -1,6 +1,6 @@
 (ns hiccup.page
   "Functions for setting up HTML pages."
-  (:require [hiccup.util :refer [without-escape-html to-uri]]
+  (:require [hiccup.util :refer [raw-string to-uri]]
             #?(:clj [hiccup.core :refer [html]])
             #?(:clj [hiccup.def :refer [defelem]]))
   #?(:cljs (:require-macros [hiccup.core :refer [html]]
@@ -30,8 +30,7 @@
 (defn xml-declaration
   "Create a standard XML declaration for the following encoding."
   [encoding]
-  (without-escape-html
-   (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n")))
+  (raw-string "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
 
 (defn include-js
   "Include a list of external javascript files."
@@ -51,7 +50,7 @@
   argument may be an optional attribute map."
      [& contents]
      `(html {:mode :sgml}
-            (without-escape-html (doctype :html4))
+            (raw-string (doctype :html4))
             [:html ~@contents])))
 
 #?(:clj
@@ -67,7 +66,7 @@
        `(let [options# ~options]
           (html {:mode :xml}
                 (xml-declaration (options# :encoding "UTF-8"))
-                (without-escape-html (doctype :xhtml-strict))
+                (raw-string (doctype :xhtml-strict))
                 (xhtml-tag (options# :lang) ~@contents))))))
 
 #?(:clj
@@ -80,9 +79,9 @@
          `(let [options# (dissoc ~options :xml?)]
             (html {:mode :xml}
                   (xml-declaration (options# :encoding "UTF-8"))
-                  (without-escape-html (doctype :html5))
+                  (raw-string (doctype :html5))
                   (xhtml-tag options# (options# :lang) ~@contents)))
          `(let [options# (dissoc ~options :xml?)]
             (html {:mode :html}
-                  (without-escape-html (doctype :html5))
+                  (raw-string (doctype :html5))
                   [:html options# ~@contents]))))))

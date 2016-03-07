@@ -145,9 +145,12 @@
   (doall (for [expr content]
            (cond
              (vector? expr) (compile-element expr)
-             (literal? expr) `(maybe-escape-html ~expr)
-             (hint? expr String) `(maybe-escape-html ~expr)
-             (hint? expr Number) `(maybe-escape-html ~expr)
+             (string? expr) (escape-html expr)
+             (keyword? expr) (escape-html (name expr))
+             (raw-string? expr) expr
+             (literal? expr) (escape-html expr)
+             (hint? expr String) `(escape-html ~expr)
+             (hint? expr Number) expr
              (seq? expr) (compile-form expr)
              :else `(comp/render-html ~expr)))))
 
@@ -168,19 +171,13 @@
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
   [& content]
-  ;;Wrap the result in a String object in order to be able to
-  ;;differentiate compiled strings from other strings using identical?.
-  ;;This would not be possible with literal strings because the jvm
-  ;;maintains a pool of constant strings:
-  ;; ( (identical? "e" "e") may be true )
-  ;;This is useful in order to escape special characters in strings.
-  (collapse-strs `(make-string
-                   (str ~@(compile-seq content)))))
+  ;;Wrap the result in a RawString object in order to be able to
+  ;;differentiate compiled strings from other strings.
+  (collapse-strs `(raw-string ~@(compile-seq content))))
 
 (defn compile-html*
   "Compile a sequence of data-structures into HTML without performaing
   any pre-compilation."
   [& content]
-  `(make-string
-    (str ~@(doall (for [expr content]
-                    `(comp/render-html ~expr))))))
+  `(raw-string ~@(for [expr content]
+                   `(comp/render-html ~expr))))
