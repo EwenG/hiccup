@@ -17,18 +17,19 @@
   [options & content]
   (let [mode (and (map? options) (:mode options))
         content (if mode content (cons options content))
-        cljs-env? (cljs-env? &env)]
-    (cond (and cljs-env? mode)
-          `(binding [*html-mode* (or ~mode *html-mode*)]
-             ~(maybe-convert-raw-string compile-html* content))
-          cljs-env?
-          (maybe-convert-raw-string compile-html* content)
-          mode
+        pre-compile? (when (map? options) (:pre-compile options))
+        pre-compile? (if (nil? pre-compile?) *pre-compile* pre-compile?)]
+    (cond (and pre-compile? mode)
           (binding [*html-mode* (or mode *html-mode*)]
             `(binding [*html-mode* (or ~mode *html-mode*)]
                ~(maybe-convert-raw-string compile-html content)))
+          pre-compile?
+          (maybe-convert-raw-string compile-html content)
+          mode
+          `(binding [*html-mode* (or ~mode *html-mode*)]
+             ~(maybe-convert-raw-string compile-html* content))
           :else
-          (maybe-convert-raw-string compile-html content))))
+          (maybe-convert-raw-string compile-html* content))))
 
 (def ^{:doc "Alias for hiccup.util/escape-html"}
   h escape-html)
