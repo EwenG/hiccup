@@ -16,10 +16,18 @@
   "Render Clojure data structures to a string of HTML."
   [options & content]
   (let [mode (and (map? options) (:mode options))
-        content (if mode content (cons options content))
-        pre-compile? (when (map? options) (:pre-compile options))
-        pre-compile? (if (nil? pre-compile?) *pre-compile* pre-compile?)]
-    (cond (and pre-compile? mode)
+        pre-compile-opt (when (map? options) (:pre-compile options))
+        pre-compile? (if (nil? pre-compile-opt)
+                       *pre-compile* pre-compile-opt)
+        output-format (and (map? options) (:output-format options))
+        output-format (or output-format *output-format*)
+        output-string? (= :string
+                          (or output-format (default-output-format &env)))
+        content (if (or mode pre-compile-opt output-format)
+                  content (cons options content))]
+    (cond (not output-string?)
+          `(quote ~content)
+          (and pre-compile? mode)
           (binding [*html-mode* (or mode *html-mode*)]
             `(binding [*html-mode* (or ~mode *html-mode*)]
                ~(maybe-convert-raw-string compile-html content)))

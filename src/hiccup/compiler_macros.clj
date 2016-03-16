@@ -176,7 +176,7 @@
   (collapse-strs `(raw-string ~@(compile-seq content))))
 
 (defn compile-html*
-  "Compile a sequence of data-structures into HTML without performaing
+  "Compile a sequence of data-structures into HTML without performing
   any pre-compilation."
   [& content]
   `(raw-string ~@(for [expr content]

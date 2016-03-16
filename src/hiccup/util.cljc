@@ -10,9 +10,25 @@
 
 (def ^:dynamic *base-url* nil)
 
-(def ^:dynamic *pre-compile* true)
-
 (def ^:dynamic *is-top-level* true)
+
+;; Pre compilation occurs during macro expansion. Thus it is only relevant
+;; on the :clj platform. One must use a side effectful macro in order to
+;; modify the root value
+#?(:clj (def ^:dynamic *pre-compile* true))
+
+;; Used in the \"html\" macro and thus only relevant on the :clj platform.
+;; One must use a side effectful macro in order to modify the root value
+#?(:clj (def ^:dynamic *output-format* nil))
+
+#?(:clj (defn cljs-env?
+          "Take the &env from a macro, and tell whether we are expanding
+  into cljs."
+          [env]
+          (boolean (:ns env))))
+
+#?(:clj (defn default-output-format [env]
+          (if (cljs-env? env) :data-structure :string)))
 
 (defprotocol ToString
   #?(:clj (^String to-str [x] "Convert a value into a string.")
