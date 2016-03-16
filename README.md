@@ -9,11 +9,22 @@ Differences from Hiccup
 Clojurescript support
 ---------------------
 
-Using Hiccup from clojurescript is supported. However, the Clojurescript version of the `html` macro does not precompiles Hiccup forms into strings. This is because reducing the javascript output size is often more important than the performance benefit of precomputation.
+Following is a code example using hiccup from Clojurescript:
 
 ```clojure
 (require '[hiccup.core :refer-macros [html]])
 cljs.user=> (html [:div "Hello from clojurescript"])
+"<div>Hello from clojurescript</div>"
+```
+
+Optional pre-compilation
+------------------------
+
+Pre-compilation of hiccup forms into string during macro expansion can be disabled. This may reduce the generated code size when compiling to javasript, at the cost of additional runtime computation.
+
+```clojure
+(require '[hiccup.core :refer-macros [html]])
+cljs.user=> (html {:pre-compile false} [:div "Hello from clojurescript"])
 "<div>Hello from clojurescript</div>"
 ```
 
