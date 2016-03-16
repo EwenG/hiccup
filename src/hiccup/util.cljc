@@ -10,6 +10,8 @@
 
 (def ^:dynamic *base-url* nil)
 
+(def ^:dynamic *pre-compile* true)
+
 (def ^:dynamic *is-top-level* true)
 
 (defprotocol ToString
